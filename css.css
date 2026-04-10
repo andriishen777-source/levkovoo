@@ -1,0 +1,1029 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding-top: 80px;
+    background-color: #f9f7f2;
+    
+}
+
+header { text-align: center; padding: 20px; }
+
+/* Навігація */
+.navbar {
+    position: fixed;
+    top: 0; width: 100%; height: 60px;
+    background: #1a1a1a; color: white;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 20px; z-index: 1000; box-sizing: border-box;
+}
+
+.nav-logo { position: absolute; left: 50%; transform: translateX(-50%); font-weight: bold; letter-spacing: 2px; }
+
+.cart-count { background: #8b4513; padding: 2px 6px; border-radius: 50%; font-size: 12px; }
+
+
+
+
+/* Каталог */
+.catalog { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 20px; }
+.card { width: 320px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.product-image { width: 100%; height: 300px; object-fit: cover; }
+.product-info { padding: 15px; text-align: center; }
+.price { font-weight: bold; font-size: 1.2rem; margin: 10px 0; }
+
+/* Плавна кнопка */
+.btn-buy {
+    width: 100%; padding: 12px; background: #8b4513;
+    color: white; border: none; border-radius: 8px;
+    font-weight: bold; cursor: pointer;
+    transition: 0.3s;
+}
+.btn-buy:hover {
+    background: #6d360f;
+    animation: smoothJump 1.2s infinite ease-in-out;
+}
+
+@keyframes smoothJump {
+    0%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px) scale(1.02); }
+}
+
+/* Модалки та Кошик */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw; /* 100% ширини екрана */
+    height: 100vh; /* 100% висоти екрана */
+    background: rgba(255, 0, 0, 0) !important; /* ЯСКРАВО ЧЕРВОНИЙ ДЛЯ ТЕСТУ */
+    display: none; /* Це перемикає JS */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000000 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.auth-container {
+    background: white !important;
+    min-width: 300px;
+    min-height: 200px;
+    display: block !important;
+    z-index: 1000001 !important;
+    box-shadow: 0 0 20px black;
+
+}
+.modal-content { 
+    background: white; padding: 30px; border-radius: 20px; 
+    text-align: center; position: relative;
+}
+.cart-wide { width: 90%; max-width: 450px; text-align: left; }
+
+.modal-close-x {
+    position: absolute; top: 15px; right: 15px;
+    font-size: 1.5rem; cursor: pointer; color: #999;
+}
+
+.cart-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 0; border-bottom: 1px solid #eee;
+}
+.cart-checkbox { width: 18px; height: 18px; accent-color: #8b4513; }
+.cart-img { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; }
+.qty-btn { border: none; background: #eee; padding: 2px 8px; cursor: pointer; border-radius: 4px; }
+
+/* Хрестик-втікач */
+.runaway-delete { cursor: pointer; color: #ccc; font-weight: bold; transition: 0.2s; }
+.runaway-delete.active { 
+    position: fixed; z-index: 3000; color: red; 
+    background: white; padding: 10px; border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.modal-btn { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
+.btn-confirm { background: #1a1a1a; color: white; }
+.btn-continue { background: #eee; }
+/* Кругла іконка кошика */
+.cart-icon {
+    cursor: pointer;
+    position: relative;
+    background: #2c2c2c; /* Темний фон, щоб не різав очі */
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px; /* Легке закруглення */
+    transition: transform 0.2s ease;
+}
+
+.cart-icon:hover {
+    transform: scale(1.05);
+}
+
+/* Ефект джина (збільшення з кутка) */
+@keyframes genieEffect {
+    0% {
+        opacity: 0;
+        transform: scale(0.1) translate(100%, -100%);
+        border-radius: 100px;
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translate(0, 0);
+        border-radius: 20px;
+    }
+}
+
+.modal-content.cart-wide {
+    animation: genieEffect 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    transform-origin: top right; /* Точка росту — верхній правий кут */
+}
+
+/* Стиль цифри на кошику */
+.cart-count {
+    background: #8b4513;
+    color: white;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 50%;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    border: 2px solid #1a1a1a;
+}
+/* ========================================= */
+/* БРОНЕБІЙНА КНОПКА НАВІГАЦІЇ (БУРГЕР)      */
+/* ========================================= */
+.menu-icon {
+    width: 30px;
+    height: 20px;
+    position: relative;
+    cursor: pointer;
+    z-index: 1001; /* Завжди поверх усього */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.menu-icon span {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: #fff; /* Білі смужки */
+    border-radius: 3px;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Якщо кнопка в оптовому кабінеті, смужки можуть бути іншого кольору, але поки залишимо білими */
+/* Перетворення в хрестик */
+.menu-icon.open span:nth-child(1) {
+    transform: translateY(8.5px) rotate(45deg);
+}
+.menu-icon.open span:nth-child(2) {
+    opacity: 0;
+}
+.menu-icon.open span:nth-child(3) {
+    transform: translateY(-8.5px) rotate(-45deg);
+}
+
+/* Елегантний дизайн меню */
+/* ========================================= */
+/* ПРАВИЛЬНИЙ МІБІЛЬНИЙ САЙДБАР (iOS СУМІСНИЙ) */
+/* ========================================= */
+/* ========================================= */
+/* БІЛЕ АКУРАТНЕ ВІКОНЦЕ (iOS СУМІСНЕ) */
+/* ========================================= */
+/* ========================================= */
+/* БОКОВЕ МЕНЮ (БРОНЕБІЙНИЙ МОБІЛЬНИЙ СТАНДАРТ) */
+/* ========================================= */
+.sidebar {
+    position: fixed;
+    top: 0; 
+    left: -100%; 
+    width: 85vw; 
+    max-width: 350px;
+    height: 100%; /* Стандартна висота */
+    height: 100dvh; /* Сучасний фікс спеціально для iOS Safari */
+    background-color: #ffffff; 
+    color: #111; 
+    border-radius: 0 24px 24px 0; /* Закруглені тільки праві кути */
+    transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 100000;
+    
+    /* Жорстке правило скролу */
+    overflow-y: auto !important; 
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch; 
+    
+    padding: 20px 25px;
+    /* Важливо: додаємо відступ знизу, щоб останні пункти точно не перекривалися */
+    padding-bottom: 60px; 
+    box-sizing: border-box;
+    box-shadow: 10px 0 40px rgba(0,0,0,0.3); 
+}
+
+.sidebar.active {
+    left: 15px; /* Виїжджає, залишаючи відступ зліва */
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar ul li a {
+    color: #333; /* Темно-сірий текст */
+    text-decoration: none;
+    display: block;
+    padding: 12px 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+    border-bottom: 1px solid #eee; /* Світла акуратна лінія */
+}
+
+.sidebar ul li a:hover {
+    color: #b8860b; /* Золотий акцент при натисканні */
+}
+
+/* Затемнення заднього фону */
+.body-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.5); /* Трохи світліше затемнення */
+    z-index: 99999;
+}
+
+.body-overlay.active {
+    display: block;
+}
+
+/* Стан, коли хрестик "втік" */
+.runaway-delete.active {
+    position: fixed; /* Тепер він літає над усім контентом */
+    z-index: 9999;   /* Поверх усіх вікон */
+    background: #ff4d4d; /* Яскраво-червоний */
+    color: white;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(255, 77, 77, 0.6);
+    border: 2px solid white;
+    animation: pulseRed 1s infinite;
+}
+
+@keyframes pulseRed {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+.checkout-container {
+    width: 95%;
+    max-width: 600px;
+    text-align: left;
+    max-height: 90vh;
+    overflow-y: auto; /* Щоб можна було скролити на телефоні */
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.checkout-container input, 
+.checkout-container select, 
+.checkout-container textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.order-summary {
+    background: #fdfaf5;
+    padding: 15px;
+    border-radius: 12px;
+    margin: 20px 0;
+    border: 1px dashed #8b4513;
+}
+
+/* Стиль чека */
+.receipt-box {
+    font-family: 'Courier New', monospace; /* Стиль друкарської машинки */
+    background: white;
+    padding: 20px;
+    border: 1px solid #eee;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+#shippingDetails input {
+    margin-bottom: 5px; /* Невеликий відступ між полями адреси */
+}
+
+/* Стиль для старої (перекресленої) ціни */
+.price-old {
+    text-decoration: line-through;
+    color: #999;
+    font-size: 0.9rem;
+    margin-right: 10px;
+}
+
+/* Стиль для нової оптової ціни */
+.price-wholesale {
+    color: #2ecc71; /* Світло-зелений колір */
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+/* Контейнер для ціни, щоб вони були в один рядок */
+.price-container {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    margin: 10px 0;
+}
+.auth-container {
+    max-width: 400px;
+    width: 90%;
+    padding: 30px;
+    border-radius: 20px;
+}
+
+.auth-container input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+#wholesaleFields {
+    margin-top: 15px;
+}
+.nav-logo {
+    display: inline-block;
+    cursor: pointer;
+    transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Дуже швидкий старт */
+}
+
+/* Клас, який додається при кліку */
+.logo-boom {
+    transform: scale(3); /* Моментальне збільшення в 3 рази */
+    opacity: 0;         /* Плавне зникнення в кінці ривка */
+    color: var(--leather-accent);
+}
+.contact-card {
+    max-width: 350px !important;
+    text-align: center;
+    padding: 40px 20px !important;
+    border-radius: 2px !important; /* Мінімалізм як у LEVKOVO */
+}
+
+.contact-icon:hover {
+    animation: gentleBounce 0.6s ease; /* Твій фірмовий стрибок */
+}
+
+.phone-number {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--leather-accent);
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+    transition: transform 0.2s ease;
+}
+
+.phone-number:hover {
+    transform: scale(1.05); /* Легке збільшення при наведенні */
+    color: var(--premium-brown);
+}
+.contact-text-link {
+    text-decoration: none;
+    color: var(--premium-brown);
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    display: inline-block;
+    transition: color 0.3s ease;
+    padding: 10px 15px;
+    border: 1px solid rgba(61, 43, 31, 0.1); /* Ледь помітна рамка для солідності */
+}
+
+.contact-text-link:hover {
+    color: var(--leather-accent);
+    border-color: var(--leather-accent);
+    animation: gentleBounce 0.6s ease; /* Елегантний підстриб */
+}
+
+/* Використовуємо вже існуючу анімацію gentleBounce */
+@keyframes gentleBounce {
+    0%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-5px); }
+    50% { transform: translateY(-2px); }
+    70% { transform: translateY(-3px); }
+}
+/* Закруглене преміальне вікно */
+.contact-card-premium {
+    background: #fff;
+    padding: 50px 30px;
+    border-radius: 25px; /* М'яке закруглення вікна */
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+}
+
+/* Контейнер для посилань */
+.social-links-minimal {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+/* Стиль надписів месенджерів (світло-коричневий) */
+.luxury-text-link {
+    text-decoration: none;
+    color: #a67c52; /* Світло-коричневий, колір обробленої шкіри */
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    display: inline-block;
+    transition: color 0.3s ease;
+}
+
+/* Ефект стрибка самих букв при наведенні */
+.luxury-text-link:hover {
+    color: #8b4513; /* Темніший коричневий при наведенні */
+    animation: luxuryBounce 0.6s ease;
+}
+
+/* Блок телефону */
+.phone-display-box {
+    border-top: 1px solid #f0f0f0;
+    padding-top: 30px;
+}
+
+.phone-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #999;
+}
+
+.phone-number-premium {
+    font-size: 1.6rem;
+    color: #3d2b1f;
+    text-decoration: none;
+    font-weight: bold;
+    display: block;
+    margin: 10px 0;
+    transition: transform 0.3s ease;
+}
+
+.phone-number-premium:hover {
+    transform: scale(1.03);
+    color: #8b4513;
+}
+
+.phone-subtext {
+    font-size: 0.65rem;
+    color: #ccc;
+}
+
+/* Анімація стрибка */
+@keyframes luxuryBounce {
+    0%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-7px); }
+    50% { transform: translateY(-2px); }
+    70% { transform: translateY(-4px); }
+}
+/* Новий естетичний хрестик */
+.close-btn-premium {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    font-size: 28px;
+    font-weight: 300; /* Робимо його тоншим для елегантності */
+    color: #ccc;
+    cursor: pointer;
+    line-height: 1;
+    transition: all 0.3s ease;
+}
+
+.close-btn-premium:hover {
+    color: #8b4513; /* Колір шкіри при наведенні */
+    transform: rotate(90deg) scale(1.2); /* Елегантний поворот при наведенні */
+}
+
+/* Переконайся, що контейнер має relative, щоб хрестик не втік за межі */
+.contact-card-premium {
+    position: relative; 
+    /* ... твої інші стилі для закруглення та фону ... */
+}
+/* Нові стилі для гарного завантаження файлу */
+.levkovo-file-upload {
+    position: relative;
+    margin-top: 10px;
+}
+
+/* Ховаємо стандартну потворну кнопку */
+.levkovo-file-upload input[type="file"] {
+    position: absolute;
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    z-index: -1;
+}
+
+/* Робимо нову, красиву кнопку */
+.custom-file-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    background-color: transparent; /* Прозорий фон */
+    border: 1px solid #8b4513; /* Коричнева рамка Levkovo */
+    color: #8b4513; /* Коричневий текст */
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Іконка фотоапарата */
+.file-icon {
+    font-size: 1.1rem;
+}
+
+/* Ефекти при наведенні */
+.custom-file-btn:hover {
+    background-color: #f7ede2; /* Світло-бежевий фон */
+}
+
+/* Кнопка стає коричневою, коли файл вибрано */
+.levkovo-file-upload input[type="file"]:valid + .custom-file-btn {
+    background-color: #8b4513;
+    color: #fff;
+}
+
+/* Текст статусу файлу (маленький і сірий) */
+.file-status {
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 5px;
+    margin-left: 5px;
+}
+.autocomplete-list {
+    position: absolute;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    display: none;
+}
+
+.list-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.list-item:hover {
+    background: #f7ede2; /* Колір шкіри Levkovo */
+    color: #8b4513;
+}
+
+.levkovo-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-family: inherit;
+}
+/* Контейнер для палітри */
+.color-picker-container {
+    display: flex;
+    gap: 15px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+}
+
+/* Стиль кожного кружечка */
+.color-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #ddd;
+    transition: all 0.3s ease;
+    background-size: cover; /* Щоб фото шкіри заповнило кружечок */
+    position: relative;
+}
+
+/* Ефект при наведенні та виборі */
+.color-circle:hover { transform: scale(1.1); border-color: #8b4513; }
+.color-circle.active { border-color: #8b4513; box-shadow: 0 0 8px rgba(139, 69, 19, 0.5); }
+
+/* Напівпрозора назва при натисканні */
+.color-name-toast {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.color-circle:active .color-name-toast { opacity: 1; }
+/* Виправляємо зум на iPhone */
+input[type="text"], 
+input[type="tel"], 
+input[type="email"], 
+textarea, 
+select {
+    font-size: 16px !important;
+}
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Три колонки в ряд */
+    gap: 15px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.category-card {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 1 / 1; /* Квадратні картки */
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+}
+
+.category-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.7); /* Робимо картинку темнішою, щоб текст було видно */
+}
+
+.category-card span {
+    position: absolute;
+    bottom: 15px;
+    left: 10px;
+    right: 10px;
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+}
+
+/* Для мобільних телефонів - дві колонки або одна */
+@media (max-width: 600px) {
+    .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 10px;
+    }
+}
+#wholesale-banner-container {
+    max-width: 1200px;
+    margin: 10px auto;
+    padding: 0 20px;
+}
+
+.wholesale-banner {
+    background: linear-gradient(135deg, #ffd700 0%, #ffcc00 100%);
+    color: #000;
+    padding: 15px 25px;
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 204, 0, 0.3);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.wholesale-banner:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(255, 204, 0, 0.4);
+}
+
+.banner-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.banner-icon {
+    font-size: 1.8rem;
+    background: rgba(255, 255, 255, 0.5);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
+
+.banner-text strong {
+    font-size: 1.1rem;
+    display: block;
+}
+
+.banner-text p {
+    font-size: 0.85rem;
+    margin: 0;
+    opacity: 0.8;
+}
+
+.banner-arrow {
+    font-size: 1.5rem;
+    font-weight: bold;
+    opacity: 0.5;
+}
+
+/* На мобільних зменшуємо відступи */
+@media (max-width: 600px) {
+    #wholesale-banner-container {
+        padding: 0 10px;
+    }
+    .banner-text p {
+        display: none; /* Ховаємо опис на малих екранах */
+    }
+}
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Відступ між "Увійти" та кошиком */
+}
+
+.nav-auth-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #8b4513; /* Твій фірмовий коричневий */
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    padding: 5px 10px;
+    border-radius: 6px;
+}
+
+.nav-auth-text:hover {
+    background: rgba(139, 69, 19, 0.1); /* Легкий відблиск при наведенні */
+    transform: scale(1.05);
+}
+
+/* На мобільних телефонах, щоб не було тісно */
+@media (max-width: 400px) {
+    .nav-auth-text {
+        font-size: 0.8rem;
+        gap: 8px;
+    }
+}
+/* ========================================= */
+/* БОЙОВИЙ ПАТЧ ДЛЯ МІБІЛЬНИХ ПРИСТРОЇВ (iOS) */
+/* ========================================= */
+
+/* 1. Вбиваємо горизонтальний скрол (щоб сайт не тікав) */
+html, body {
+    overflow-x: hidden !important;
+    width: 100%;
+    position: relative;
+}
+
+/* 2. Забороняємо iOS зумити екран при введенні тексту */
+input, textarea, select {
+    font-size: 16px !important;
+}
+
+/* 3. Вбиваємо потворні сині селектори Apple і робимо їх преміальними */
+select, .levkovo-input select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: #fafafa;
+    color: #111 !important;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 12px;
+    width: 100%;
+    font-size: 16px !important;
+    /* Додаємо свою красиву чорну стрілочку замість стандартної */
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 1em;
+}
+
+/* 4. Лікуємо зависання модалок і фоновий скрол */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow-y: auto !important; /* Дозволяємо скролити саму модалку */
+    -webkit-overflow-scrolling: touch; /* Плавний скрол на iOS */
+    padding: 20px 0;
+    box-sizing: border-box;
+}
+
+/* Модалка більше не буде обрізатися знизу */
+.modal-content {
+    margin: auto;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+/* 5. Вирівнюємо мобільне меню (навігацію), щоб воно не вилазило за екран */
+#mobileMenu, .mobile-menu {
+    max-width: 85vw !important; /* Меню займатиме максимум 85% екрану */
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+/* ========================================= */
+/* БОЙОВИЙ ПАТЧ ДЛЯ МОБІЛЬНИХ ПРИСТРОЇВ (iOS) */
+/* ========================================= */
+
+/* 1. Вбиваємо горизонтальний скрол (щоб сайт не тікав) */
+html, body {
+    overflow-x: hidden !important;
+    width: 100%;
+    position: relative;
+    max-width: 100vw;
+}
+
+/* 2. Забороняємо iOS зумити екран при введенні тексту */
+input, textarea, select {
+    font-size: 16px !important;
+}
+
+/* 3. Вбиваємо потворні сині селектори Apple і робимо їх преміальними */
+select, .modal-content select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: #fafafa;
+    color: #111 !important;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 12px;
+    width: 100%;
+    font-size: 16px !important;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 1em;
+}
+
+/* 4. Лікуємо зависання модалок і фоновий скрол */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    z-index: 99999;
+    padding: 20px 0;
+    box-sizing: border-box;
+}
+
+/* 5. Вирівнюємо мобільне меню (навігацію), щоб воно не вилазило за екран */
+#mobileMenu, .mobile-menu {
+    max-width: 85vw !important; /* Меню займатиме максимум 85% екрану */
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* НОВІ СТИЛІ ДЛЯ ВКЛАДЕНОГО МЕНЮ ТОВАРІВ */
+.mobile-sub-menu {
+    display: none; /* Сховано за замовчуванням */
+    list-style: none;
+    padding-left: 20px; /* Відступ для ієрархії */
+    border-left: 2px solid #ccc; /* Лінія-покажчик */
+    margin: 5px 0;
+    transition: 0.3s;
+}
+
+.mobile-sub-menu.open {
+    display: block; /* Показати */
+}
+
+.mobile-sub-menu li a {
+    font-size: 0.95rem !important; /* Трохи менший шрифт */
+    color: #444 !important;
+    padding: 8px 0;
+    font-weight: normal;
+}
+/* ========================================= */
+/* ПРЕМІАЛЬНІ АНІМАЦІЇ LEVKOVO             */
+/* ========================================= */
+
+/* 1. Плавна гармошка для "Товарів" */
+.submenu-accordion {
+    list-style: none;
+    padding-left: 15px;
+    margin: 0;
+    max-height: 0; /* Сховано за замовчуванням */
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out;
+}
+
+.submenu-accordion.open {
+    max-height: 400px; /* Відкривається плавно */
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+/* 2. Анімація появи ВСІХ вікон (замість кривого "Джина") */
+@keyframes premiumFadeInScale {
+    0% { opacity: 0; transform: scale(0.95) translateY(10px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-content {
+    animation: premiumFadeInScale 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* 3. Ексклюзивна кнопка Оптового кабінету (Металевий відблиск) */
+.b2b-premium-btn {
+    position: relative;
+    overflow: hidden;
+    background: #ffd700;
+    color: #111;
+    font-weight: bold;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    width: 100%;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    transition: transform 0.2s;
+}
+
+.b2b-premium-btn:active {
+    transform: scale(0.98);
+}
+
+/* Сам ефект світлового бліку */
+.b2b-premium-btn::after {
+    content: '';
+    position: absolute;
+    top: 0; 
+    left: -100%; 
+    width: 50%; 
+    height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-25deg);
+    animation: luxuryShine 3.5s infinite;
+}
+
+@keyframes luxuryShine {
+    0% { left: -100%; }
+    20% { left: 200%; }
+    100% { left: 200%; }
+}

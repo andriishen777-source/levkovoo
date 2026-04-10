@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Товар | LEVKOVO</title>
+    <link rel="icon" type="image/png" href="favicon.jpg">
+    <link rel="stylesheet" href="css.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .product-page-container { padding: 20px; max-width: 600px; margin: 80px auto 20px auto; }
+        .product-main-img { width: 100%; border-radius: 12px; object-fit: cover; aspect-ratio: 4/3; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .product-details { margin-top: 20px; text-align: left; }
+        .price-big { font-size: 1.5rem; margin: 15px 0; }
+        .options-section { margin: 20px 0; }
+        select { width: 100%; padding: 10px; margin-top: 5px; border-radius: 8px; border: 1px solid #ccc; }
+        .dyn-color-circle { box-sizing: border-box; }
+        .dyn-color-circle.active { border: 3px solid #ffd700 !important; transform: scale(1.15) !important; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+    </style>
+    <script src="analytics.js"></script>
+    
+</head>
+<body>
+
+<div class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; width: 100%; box-sizing: border-box; background: #1a1a1a; color: #fff; position: fixed; top: 0; left: 0; z-index: 1000;">
+    <div onclick="window.history.back()" style="cursor:pointer; flex: 1; text-align: left; font-size: 0.95rem; font-weight: normal;">
+        ← НАЗАД
+    </div>
+    <div style="flex: 1; text-align: center;">
+        <a href="index.html" style="font-weight: 700; font-size: 1.2rem; letter-spacing: 1px; color: #ffd700; text-decoration: none; text-transform: uppercase;">LEVKOVO</a>
+    </div>
+    <div style="flex: 1; display: flex; justify-content: flex-end;">
+        <div class="cart-icon" onclick="openCart()" style="cursor:pointer; position: relative; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: #333; border-radius: 8px;">
+            <span style="font-size: 1.1rem; line-height: 1;">🛒</span>
+            <span class="cart-count" id="cart-count" style="position: absolute; top: -6px; right: -6px; background: #888; color: white; border-radius: 50%; padding: 2px 5px; font-size: 0.7rem; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">0</span>
+        </div>
+    </div>
+</div>
+
+<div id="sidebar" class="sidebar">
+    <div style="text-align: right; cursor: pointer; font-size: 1.8rem; padding: 5px 15px; color: #111;" onclick="toggleSidebar()">✕</div>
+    
+    <h2 style="color: #111; text-align: center; margin-top: 0; margin-bottom: 10px; letter-spacing: 2px;">LEVKOVO</h2>
+    
+    <ul style="padding-bottom: 10px; margin: 0;">
+        <li><a href="index.html" style="padding: 8px 0;">Головна</a></li>
+        
+        <li>
+            <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 8px 0; border-bottom: 1px solid #eee;" onclick="toggleSubmenu()">
+                <strong style="color: #333; font-size: 1.1rem; font-weight: 500;">Товари</strong>
+                <span id="submenu-arrow" style="color: #111; font-size: 1.2rem; transition: transform 0.3s;">▼</span>
+            </div>
+            <ul id="mobile-categories-list" class="submenu-accordion"></ul>
+        </li>
+        
+        <li><a href="#" onclick="openReviewsModal(); toggleSidebar(); return false;" style="color: #b8860b; padding: 8px 0;">Відгуки клієнтів</a></li>
+        
+        <li id="profile-link-li" style="margin-top: 5px; border-top: 2px solid #f5f5f5; padding-top: 10px; padding-bottom: 5px;">
+            <a href="#" onclick="login(); toggleSidebar(); return false;" style="font-weight: bold; color: #111;">Мій Профіль / Реєстрація</a>
+        </li>
+
+        <li style="margin-top: 10px;">
+            <ul style="list-style: none; padding: 0; border-left: 2px solid #eee; padding-left: 15px;">
+                <li><a href="#" onclick="openLegalModal('deliveryModal'); toggleSidebar(); return false;" style="font-size: 0.85rem; color: #999; padding: 4px 0; border: none;">Оплата і доставка</a></li>
+                <li><a href="#" onclick="openLegalModal('returnModal'); toggleSidebar(); return false;" style="font-size: 0.85rem; color: #999; padding: 4px 0; border: none;">Обмін та повернення</a></li>
+                <li><a href="#" onclick="openLegalModal('offerModal'); toggleSidebar(); return false;" style="font-size: 0.85rem; color: #999; padding: 4px 0; border: none;">Публічна оферта</a></li>
+            </ul>
+        </li>
+
+        <li style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+            <a href="about.html" style="display: block; font-size: 0.95rem; color: #666; font-weight: 500; border: none; padding: 0; transition: 0.2s;"><h3>Про нас</h3></a>
+            <a href="#" onclick="openContacts(); toggleSidebar(); return false;" style="display: block; font-size: 1.3rem; font-weight: 800; color: #111; padding-bottom: 5px; border: none; transition: 0.2s;">📞 Контакти</a>
+        </li>
+    </ul> 
+</div>
+
+<div class="product-page-container">
+    <h1 id="prod-title" style="margin-bottom: 15px; font-size: 1.8rem; color: #111;">Завантаження...</h1>
+    
+    <div id="product-gallery-container" style="margin-bottom: 20px;">
+        <img id="prod-img" src="" alt="Товар" class="product-main-img">
+        <div id="prod-thumbnails" style="display: flex; gap: 10px; margin-top: 15px; overflow-x: auto; padding-bottom: 5px;"></div>
+    </div>
+    
+    <div id="prod-price" style="font-size: 1.8rem; font-weight: bold; color: #8b4513; margin-bottom: 15px;"></div>
+    <p id="prod-desc" style="color: #555; margin-bottom: 25px; line-height: 1.6;"></p>
+
+    <div id="dynamic-options-container" style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 25px;">
+        
+        <div id="section-colors" style="display: none; margin-bottom: 25px;">
+            <strong style="display: block; margin-bottom: 10px;">
+    Оберіть колір шкіри: <span id="color-display-text" style="color: #8b4513; margin-left: 5px;"></span>
+</strong>
+          <div style="background-color: #fff9e6; border-left: 4px solid #f39c12; padding: 10px 12px; margin-bottom: 15px; border-radius: 0 4px 4px 0; font-size: 0.85rem; color: #666; display: flex; align-items: flex-start; gap: 8px;">
+    <span style="font-size: 1.1rem; line-height: 1;">⚠️</span>
+    <span style="line-height: 1.4;">Колір шкіри може незначно відрізнятися від фото через налаштування вашого екрана та особливості натурального матеріалу.</span>
+</div>
+            <div id="render-colors" style="display: flex; gap: 12px; flex-wrap: wrap;"></div>
+            <input type="hidden" id="selectedColorValue" value="">
+        </div>
+
+        <div id="section-hardware" style="display: none; margin-bottom: 25px;">
+            <strong style="display:block; margin-bottom: 10px; color: #333;">Колір фурнітури:</strong>
+            <div id="render-hardware" style="display: flex; gap: 15px; flex-direction: column;"></div>
+            <input type="hidden" id="selectedHardwareValue" value="">
+        </div>
+
+        <div id="section-texts" style="margin-bottom: 20px;"></div>
+
+        <div id="section-photo" style="display: none; margin-bottom: 10px;">
+            <strong style="display:block; margin-bottom: 10px; color: #333;">Додати власне фото/логотип:</strong>
+            <label style="display: inline-block; border: 2px dashed #8b4513; background: #fffaf0; padding: 12px 20px; border-radius: 8px; cursor: pointer; color: #8b4513; font-weight: bold; width: 100%; box-sizing: border-box; text-align: center; transition: 0.2s;">
+                📷 Вибрати файл з пристрою
+                <input type="file" id="logo-photo" style="display: none;" onchange="handleFileChange(this)" accept="image/jpeg, image/png">
+            </label>
+            <div id="file-filename" style="font-size: 0.85rem; color: #666; margin-top: 8px; text-align: center;">Файл не вибрано (до 2 МБ)</div>
+        </div>
+    </div>
+
+    <button class="btn-buy" onclick="addDynamicProductToCart()" style="width: 100%; padding: 18px; font-size: 1.2rem; border-radius: 12px; background-color: #111; color: #ffd700; border: none; cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">ДОДАТИ В КОШИК</button>
+</div>
+
+<div id="cartModal" class="modal-overlay" style="display:none;">
+    <div class="modal-content cart-wide">
+        <div class="modal-close-x" onclick="closeCart()">✕</div>
+        <h2>Твій кошик</h2>
+        <div id="cart-items-container"></div>
+        <div class="cart-footer">
+            <div id="cart-total">Разом: 0 грн</div>
+            <button class="modal-btn btn-confirm" onclick="openCheckout()">Оформити замовлення</button>
+            <button class="modal-btn btn-continue" onclick="closeCart()">Продовжити покупки</button>
+        </div>
+    </div>
+</div>
+
+<div id="checkoutModal" class="modal-overlay" style="display:none;">
+    <div class="modal-content checkout-container">
+        <span class="modal-close-x" onclick="closeCheckout()">✕</span>
+        <h2>Оформлення замовлення</h2>
+        <form id="orderForm" onsubmit="generateReceipt(event)">
+            <div class="form-grid">
+                <input type="text" id="orderLastName" placeholder="Прізвище" required class="levkovo-input">
+                <input type="text" id="orderFirstName" placeholder="Ім'я" required class="levkovo-input">
+                <input type="text" id="orderMiddleName" placeholder="По батькові" class="levkovo-input">
+                <div class="phone-input-group" style="grid-column: span 2; margin-bottom: 10px; text-align: left;">
+                    <div class="phone-box" style="display: flex; align-items: center; border: 1px solid #ccc; border-radius: 4px; padding: 8px 10px; background: #fff;">
+                        <span style="font-weight: bold; color: #8b4513; margin-right: 5px;">+38</span>
+                        <input type="tel" id="checkoutPhone" class="levkovo-phone" placeholder="0XXXXXXXXX" maxlength="10" oninput="validatePhone(this)" style="border: none; outline: none; width: 100%; font-size: 1rem;" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="shipping-section" style="margin-top: 15px;">
+                <h3>Доставка</h3>
+                <select id="shippingMethod" onchange="handleNPTypeChange()" required class="levkovo-input">
+                    <option value="" disabled selected>Оберіть спосіб доставки</option>
+                    <option value="nova">Нова Пошта</option>
+                    <option value="ukr">Укрпошта</option>
+                </select>
+                <div id="npOptions" style="display: none; margin-top: 10px;">
+                    <input type="text" id="npCity" placeholder="Почніть вводити місто..." class="levkovo-input">
+                    <div id="cityList" class="autocomplete-list" style="display:none;"></div> 
+                    <input type="text" id="npWarehouse" placeholder="Виберіть відділення..." class="levkovo-input" style="margin-top:10px;">
+                    <div id="warehouseList" class="autocomplete-list" style="display:none;"></div> 
+                </div>
+                <div id="ukrOptions" style="display: none; margin-top: 10px;">
+                    <input type="text" id="orderUkrCity" placeholder="Місто" class="levkovo-input">
+                    <input type="text" id="orderUkrIndex" placeholder="Індекс" class="levkovo-input">
+                </div>
+            </div>
+
+            <div class="payment-section" style="margin-top: 15px;">
+                <h3>Спосіб оплати</h3>
+                <select id="paymentMethod" required class="levkovo-input">
+                    <option value="card" selected>Оплата за реквізитами</option>
+                    <option value="cash">Післяплата</option>
+                </select>
+            </div>
+
+            <div class="feedback-options" style="margin: 15px 0; text-align: left;">
+                <select id="callbackMethod" required class="levkovo-input">
+                    <option value="yes" selected>Зателефонуйте мені для підтвердження</option>
+                    <option value="no">Не потрібно телефонувати</option>
+                </select>
+            </div>
+
+            <textarea id="orderComment" class="levkovo-input" placeholder="Коментар до замовлення..." rows="2" style="margin-top: 10px;"></textarea>
+            
+            <div class="order-summary" style="margin-top: 15px; background: #fffaf0; padding: 15px; border-radius: 8px;">
+                <div id="checkout-items"></div>
+                <div id="checkout-total" style="font-weight: bold; margin-top: 10px; font-size: 1.2rem; color: #8b4513;"></div>
+            </div>
+            <div style="background: #f9f9f9; padding: 12px; border-radius: 8px; border: 1px dashed #ccc; margin-top: 15px; margin-bottom: 15px;">
+    <strong style="display:block; margin-bottom: 5px; font-size: 0.9rem;">Є промокод? (не обов'язково):</strong>
+    <div style="display: flex; gap: 5px;">
+        <input type="text" id="promoCodeInput" class="levkovo-input" placeholder="Введіть код" style="text-transform: uppercase; width: 100%; box-sizing: border-box; transition: 0.3s;">
+        <button type="button" onclick="checkPromoCode()" style="background: #111; color: white; border: none; border-radius: 5px; padding: 0 15px; cursor: pointer; font-weight: bold;">Застосувати</button>
+    </div>
+    <div id="promo-status-msg" style="font-size: 0.8rem; margin-top: 5px; font-weight: bold;"></div>
+</div>
+            <button type="submit" class="modal-btn btn-confirm" style="margin-top: 15px;">Підтвердити замовлення</button>
+            
+        </form>
+        <div style="height: 100px; width: 100%; flex-shrink: 0; pointer-events: none;"></div>
+    </div>
+</div>
+
+<div id="receiptOverlay" class="modal-overlay" style="display:none;">
+    <div class="modal-content receipt-box" id="receiptPrint"></div>
+</div>
+
+<div id="authModal" class="modal-overlay" style="display: none; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 100000; align-items: center; justify-content: center;">
+    <div class="modal-content auth-container" style="background: #fff; width: 90%; max-width: 400px; border-radius: 16px; padding: 30px; position: relative; box-shadow: 0 15px 35px rgba(0,0,0,0.2); text-align: center; font-family: 'Segoe UI', sans-serif;">
+        <span class="modal-close-x" onclick="closeAuth()" style="position: absolute; top: 15px; right: 20px; font-size: 24px; color: #888; cursor: pointer; transition: 0.2s;">✕</span>
+        <div id="authChoice">
+            <h2 style="color: #111; margin-bottom: 25px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Вітаємо в LEVKOVO</h2>
+            <button onclick="showLogin()" style="width: 100%; padding: 14px; margin-bottom: 15px; background: #111; color: #ffd700; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.2s;">УВІЙТИ</button>
+            <button onclick="showRegister()" style="width: 100%; padding: 14px; background: #f9f9f9; color: #333; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.2s;">СТВОРИТИ АКАУНТ</button>
+        </div>
+        <form id="registerForm" style="display: none; text-align: left;" onsubmit="handleRegister(event)">
+            <button type="submit" id="regSubmitBtn" style="width: 100%; padding: 14px; background: #111; color: #ffd700; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer;">Зареєструватися</button>
+        </form>
+        <form id="loginForm" style="display: none; text-align: left;" onsubmit="handleLogin(event)">
+            <button type="submit" style="width: 100%; padding: 14px; background: #111; color: #ffd700; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer;">Увійти</button>
+        </form>
+    </div>
+</div>
+
+<footer style="background: #111; color: #ccc; padding: 50px 20px 20px; margin-top: 60px; font-family: 'Segoe UI', sans-serif; border-top: 3px solid #ffd700;">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px; justify-content: space-between;">
+        
+        <div style="flex: 1; min-width: 250px;">
+            <h3 style="color: #ffd700; margin-top: 0; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase;">LEVKOVO</h3>
+            <p style="font-size: 0.95rem; line-height: 1.6; color: #aaa;">Майстерня шкіряних виробів ручної роботи. Створюємо речі, які живуть довше, ніж швидкоплинні тренди. Тільки натуральна шкіра, тільки ручний шов.</p>
+        <div style="display: flex; gap: 15px; margin: 15px 0;">
+                 <a href="https://www.etsy.com/shop/levkovo" target="_blank" style="color: #ccc; text-decoration: none; font-size: 0.9rem; border: 1px solid #444; padding: 5px 10px; border-radius: 5px;">Etsy</a>
+            </div>
+        </div>
+
+        <div style="flex: 1; min-width: 200px;">
+            <h4 style="color: #fff; margin-top: 0; font-size: 1.1rem;">Клієнтам</h4>
+            <ul style="list-style: none; padding: 0; line-height: 2; font-size: 0.95rem;">
+                <li><a href="#" onclick="openLegalModal('deliveryModal'); return false;" style="color: #ccc; text-decoration: none; transition: 0.2s;">📦 Оплата і доставка</a></li>
+                <li><a href="#" onclick="openLegalModal('returnModal'); return false;" style="color: #ccc; text-decoration: none; transition: 0.2s;">🔄 Обмін та повернення</a></li>
+                <li><a href="#" onclick="openLegalModal('offerModal'); return false;" style="color: #ccc; text-decoration: none; transition: 0.2s;">📄 Публічна оферта</a></li>
+            </ul>
+        </div>
+
+        <div style="flex: 1; min-width: 200px;">
+            <h4 style="color: #fff; margin-top: 0; font-size: 1.1rem;">Контакти</h4>
+            <p style="font-size: 0.95rem; margin: 8px 0;">📞 <a href="tel:+380689721598" style="color: #ffd700; text-decoration: none; font-weight: bold;">+38 (068) 972-15-98</a></p>
+            <div style="display: flex; gap: 15px; margin: 15px 0;">
+                <a href="https://t.me/levkovo_support" target="_blank" style="color: #ccc; text-decoration: none; font-size: 0.9rem; border: 1px solid #444; padding: 5px 10px; border-radius: 5px;">Telegram</a>
+                <a href="https://connect.viber.com/business/c740c454-18c9-11f1-866a-ceca6eb5e534" target="_blank" style="color: #ccc; text-decoration: none; font-size: 0.9rem; border: 1px solid #444; padding: 5px 10px; border-radius: 5px;">Viber</a>
+                 </div>
+            <p style="font-size: 0.9rem; margin: 5px 0; color: #888;">📍 Україна, м. Вінниця</p>
+            <p style="font-size: 0.9rem; margin: 5px 0; color: #888;">⏰ Пн-Пт: 9:00 - 23:00</p>
+             <div style="display: flex; gap: 15px; margin: 15px 0;">
+               <a href="https://www.instagram.com/levkovo__manufacture/" target="_blank" style="color: #ccc; text-decoration: none; font-size: 0.9rem; border: 1px solid #444; padding: 5px 10px; border-radius: 5px;">Instagram</a>
+                 <a href="https://www.youtube.com/@Levkovoleather" target="_blank" style="color: #ccc; text-decoration: none; font-size: 0.9rem; border: 1px solid #444; padding: 5px 10px; border-radius: 5px;">YouTube</a>
+                </div>
+        </div>
+    </div>
+    <div style="text-align: center; border-top: 1px solid #333; margin-top: 40px; padding-top: 20px; font-size: 0.85rem; color: #666;">
+        &copy; 2026 LEVKOVO. Всі права захищено. Копіювання матеріалів заборонено.
+    </div>
+</footer>
+
+<div id="deliveryModal" class="modal-overlay" style="display: none; z-index: 100000; background: rgba(0,0,0,0.8); align-items: center; justify-content: center;">
+    <div class="modal-content" style="background: #fff; padding: 30px; border-radius: 12px; max-width: 500px; width: 90%; position: relative; text-align: left;">
+        <span onclick="this.parentElement.parentElement.style.display='none'" style="position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #888;">&times;</span>
+        <h2 style="color: #111; margin-top: 0; border-bottom: 2px solid #ffd700; padding-bottom: 10px;">Оплата і доставка</h2>
+        <div style="color: #444; font-size: 0.95rem; line-height: 1.6; max-height: 60vh; overflow-y: auto; padding-right: 10px;">
+            <p><b>🚚 Способи доставки:</b><br>Відправка замовлень здійснюється по всій території України службами "Нова Пошта" та "Укрпошта". Термін доставки залежить від обраного оператора.</p>
+            <p><b>💳 Способи оплати:</b><br>1. Повна передоплата на офіційні реквізити (IBAN).<br>2. Післяплата (накладений платіж) можлива за умови внесення мінімального гарантійного платежу у розмірі 150 грн (покриває транспортні витрати у разі відмови).</p>
+            <p><b>⏳ Терміни:</b><br>Більшість виробів виготовляються індивідуально. Термін виготовлення складає від 2 до 5 робочих днів після підтвердження замовлення.</p>
+        </div>
+    </div>
+</div>
+
+<div id="returnModal" class="modal-overlay" style="display: none; z-index: 100000; background: rgba(0,0,0,0.8); align-items: center; justify-content: center;">
+    <div class="modal-content" style="background: #fff; padding: 30px; border-radius: 12px; max-width: 500px; width: 90%; position: relative; text-align: left;">
+        <span onclick="this.parentElement.parentElement.style.display='none'" style="position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #888;">&times;</span>
+        <h2 style="color: #111; margin-top: 0; border-bottom: 2px solid #ffd700; padding-bottom: 10px;">Обмін та повернення</h2>
+        <div style="color: #444; font-size: 0.95rem; line-height: 1.6; max-height: 60vh; overflow-y: auto; padding-right: 10px;">
+            <p>Відповідно до Закону України «Про захист прав споживачів», ви маєте право повернути або обміняти товар належної якості протягом <b>14 днів</b> з моменту отримання.</p>
+            <p><b>Умови повернення:</b><br>- Товар не був у використанні, збережено його товарний вигляд та споживчі властивості.<br>- Наявні всі розрахункові документи.</p>
+            <p style="color: #d32f2f; font-weight: bold;">⚠️ Важливо: Вироби, які були виготовлені за індивідуальним замовленням (нанесення персонального гравіювання, ініціалів, зміна стандартних розмірів), обміну та поверненню НЕ підлягають.</p>
+            <p>Транспортні витрати на повернення товару належної якості оплачує покупець.</p>
+        </div>
+    </div>
+</div>
+
+<div id="offerModal" class="modal-overlay" style="display: none; z-index: 100000; background: rgba(0,0,0,0.8); align-items: center; justify-content: center;">
+    <div class="modal-content" style="background: #fff; padding: 30px; border-radius: 12px; max-width: 500px; width: 90%; position: relative; text-align: left;">
+        <span onclick="this.parentElement.parentElement.style.display='none'" style="position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #888;">&times;</span>
+        <h2 style="color: #111; margin-top: 0; border-bottom: 2px solid #ffd700; padding-bottom: 10px;">Договір публічної оферти</h2>
+        <div style="color: #444; font-size: 0.95rem; line-height: 1.6; max-height: 60vh; overflow-y: auto; padding-right: 10px;">
+            <p>Цей текст є публічною офертою інтернет-магазину LEVKOVO. Здійснюючи замовлення на сайті, Користувач повністю приймає умови цього договору.</p>
+            <p><b>1. Предмет договору:</b> Продавець зобов'язується передати у власність Покупця товар, а Покупець зобов'язується оплатити і прийняти товар.</p>
+            <p><b>2. Характеристики товару:</b> Шкіра — натуральний матеріал. Можливі незначні відхилення у відтінку та фактурі від фотографій на сайті, що не є браком, а підтверджує натуральність походження матеріалу (особливо для шкіри Crazy Horse).</p>
+            <p><b>3. Конфіденційність:</b> Ваші персональні дані (ПІБ, телефон, адреса) використовуються виключно для обробки та доставки замовлення і не передаються третім особам.</p>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+
+<script>
+    // ПЕРЕМИКАННЯ ФОТОГРАФІЙ ПРИ ВИБОРІ КОЛЬОРУ
+   
+</script>
+<div id="reviewsModal" class="modal-overlay" style="display:none; z-index: 100000; background: rgba(0,0,0,0.92); backdrop-filter: blur(5px); align-items: center; justify-content: center;">
+    
+    <span onclick="closeReviewsModal()" style="position: absolute; top: 20px; right: 25px; font-size: 35px; color: #fff; cursor: pointer; z-index: 101; transition: 0.2s;">&times;</span>
+    
+    <button id="admin-add-review-btn" onclick="addReviewImage()" style="display:none; position: absolute; top: 25px; left: 20px; background: #ffd700; color: #000; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; z-index: 101;">
+        + Додати скріншот
+    </button>
+
+    <div style="position: relative; width: 100%; max-width: 450px; height: 85vh; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+        
+        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <button onclick="changeReview(-1)" style="position: absolute; left: 0; background: transparent; color: rgba(255,255,255,0.7); border: none; font-size: 3rem; cursor: pointer; z-index: 10; padding: 20px;">&#10094;</button>
+            
+            <img id="review-image-display" src="" style="max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <div id="no-reviews-msg" style="color: #888; font-size: 1.2rem; display: none;">Відгуків поки немає 😔</div>
+            
+            <button onclick="changeReview(1)" style="position: absolute; right: 0; background: transparent; color: rgba(255,255,255,0.7); border: none; font-size: 3rem; cursor: pointer; z-index: 10; padding: 20px;">&#10095;</button>
+        </div>
+
+        <button id="admin-delete-review-btn" onclick="deleteCurrentReview()" style="display:none; margin-top: 15px; background: #ff4d4d; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer;">
+            🗑️ Видалити це фото
+        </button>
+    </div>
+</div>
+</body>
+</html>

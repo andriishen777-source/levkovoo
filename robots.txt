@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /wholesale-dynamic.html
+Disallow: /wholesale-catalog.html
+Disallow: /admin/
+Sitemap: https://andriishen777-source.github.io/levkovo/sitemap.xml

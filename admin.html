@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <title>LEVKOVO | Адмін-панель</title>
+     <link rel="icon" type="image/png" href="favicon.jpg">
+    <link rel="stylesheet" href="css.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+    <style>
+        .admin-nav { display: flex; gap: 10px; margin: 20px 0; overflow-x: auto; padding-bottom: 10px; justify-content: center; }
+        .status-tab { padding: 10px 20px; border: 1px solid #ddd; border-radius: 20px; cursor: pointer; white-space: nowrap; background: #fff; }
+        .status-tab.active { background: #8b4513; color: #fff; border-color: #8b4513; }
+        
+        .order-card { background: #fff; border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid #eee; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .order-card.new { border-left: 5px solid #ff4d4d; }
+        .order-card.process { border-left: 5px solid #ffcc00; }
+        .order-card.shipped { border-left: 5px solid #007bff; }
+        
+        .details { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ccc; font-size: 14px; }
+        .admin-section { background: #fff; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #ddd; }
+        .admin-input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
+        .delete-btn { background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+    </style>
+    
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align:center;">LEVKOVO ADMIN</h1>
+
+        <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 30px;">
+            <button onclick="showSection('orders')" id="btn-orders" class="save-btn" style="width: auto; background: #8b4513;">Замовлення</button>
+            <button onclick="showSection('settings')" id="btn-settings" class="save-btn" style="width: auto; background: #555;">Ціни та Товари</button>
+        </div>
+
+        <div id="orders-section">
+            <input type="text" id="adminSearch" class="admin-input" placeholder="Швидкий пошук клієнта...">
+            
+            <div class="admin-nav">
+                <div class="status-tab active" onclick="changeStatusTab('В обробці', this)">Нові</div>
+                <div class="status-tab" onclick="changeStatusTab('Підтверджено', this)">В роботі</div>
+                <div class="status-tab" onclick="changeStatusTab('Відправлено', this)">Відправлені</div>
+                <div class="status-tab" onclick="changeStatusTab('Виконано', this)">Виконані</div>
+            </div>
+
+            <div id="ordersList">Завантаження замовлень...</div>
+        </div>
+
+        <div id="settings-section" style="display: none;">
+            <div class="admin-section">
+                <h3>Роздрібні ціни (грн)</h3>
+                <label>Звичайний брелок:</label>
+                <input type="number" id="adnRetailPrice" class="admin-input" placeholder="300">
+                <label>З логотипом:</label>
+                <input type="number" id="adnLogoPrice" class="admin-input" placeholder="350">
+            </div>
+
+            <div class="admin-section">
+                <h3>Оптова політика (Капля)</h3>
+                <div id="wholesale-rules-admin"></div>
+                <button onclick="addWholesaleRule()" style="font-size: 0.8rem;">+ Додати рівень цін</button>
+            </div>
+
+            <div class="admin-section">
+                <h3>Редагування сетів</h3>
+                <div id="sets-admin"></div>
+                <button onclick="addSetAdmin()">+ Додати новий сет</button>
+            </div>
+
+            <button class="save-btn" onclick="saveAdminSettings()">ЗБЕРЕГТИ ВСІ ЗМІНИ</button>
+        </div>
+    </div>
+<footer style="background: #111; color: #ccc; padding: 50px 20px 20px; margin-top: 60px; font-family: 'Segoe UI', sans-serif; border-top: 3px solid #ffd700;">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px; justify-content: space-between;">
+        
+        <div style="flex: 1; min-width: 250px;">
+            <h3 style="color: #ffd700; margin-top: 0; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase;">LEVKOVO</h3>
+            <p style="font-size: 0.95rem; line-height: 1.6; color: #aaa;">Майстерня шкіряних виробів ручної роботи. Створюємо речі, які живуть довше, ніж швидкоплинні тренди. Тільки натуральна шкіра, тільки ручний шов.</p>
+        </div>
+
+        <div style="flex: 1; min-width: 200px;">
+            <h4 style="color: #fff; margin-top: 0; font-size: 1.1rem;">Клієнтам</h4>
+            <ul style="list-style: none; padding: 0; line-height: 2; font-size: 0.95rem;">
+                <li><a href="#" onclick="openLegalModal('deliveryModal'); return false;" style="color: #ccc; text-decoration: none; transition: 0.2s;">📦 Оплата і доставка</a></li>
+                <li><a href="#" onclick="openLegalModal('returnModal'); return false;" style="color: #ccc; text-decoration: none; transition: 0.2s;">🔄 Обмін та повернення</a></li>
+                <li><a href="#" onclick="openLegalModal('offerModal'); return false;" style="color: #ccc; text-decoration: none; transition: 0.2s;">📄 Публічна оферта</a></li>
+            </ul>
+        </div>
+
+        <div style="flex: 1; min-width: 200px;">
+            <h4 style="color: #fff; margin-top: 0; font-size: 1.1rem;">Контакти</h4>
+            <p style="font-size: 0.95rem; margin: 8px 0;">📞 <a href="tel:+380689721598" style="color: #ffd700; text-decoration: none; font-weight: bold;">+38 (068) 972-15-98</a></p>
+            <div style="display: flex; gap: 15px; margin: 15px 0;">
+                <a href="https://t.me/levkovo_support" target="_blank" style="color: #ccc; text-decoration: none; font-size: 0.9rem; border: 1px solid #444; padding: 5px 10px; border-radius: 5px;">Telegram</a>
+                <a href="https://connect.viber.com/business/c740c454-18c9-11f1-866a-ceca6eb5e534" target="_blank" style="color: #ccc; text-decoration: none; font-size: 0.9rem; border: 1px solid #444; padding: 5px 10px; border-radius: 5px;">Viber</a>
+            </div>
+            <p style="font-size: 0.9rem; margin: 5px 0; color: #888;">📍 Україна, м. Вінниця</p>
+            <p style="font-size: 0.9rem; margin: 5px 0; color: #888;">⏰ Пн-Пт: 10:00 - 19:00</p>
+        </div>
+    </div>
+    <div style="text-align: center; border-top: 1px solid #333; margin-top: 40px; padding-top: 20px; font-size: 0.85rem; color: #666;">
+        &copy; 2026 LEVKOVO. Всі права захищено. Копіювання матеріалів заборонено.
+    </div>
+</footer>
+
+<div id="deliveryModal" class="modal-overlay" style="display: none; z-index: 100000; background: rgba(0,0,0,0.8); align-items: center; justify-content: center;">
+    <div class="modal-content" style="background: #fff; padding: 30px; border-radius: 12px; max-width: 500px; width: 90%; position: relative; text-align: left;">
+        <span onclick="this.parentElement.parentElement.style.display='none'" style="position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #888;">&times;</span>
+        <h2 style="color: #111; margin-top: 0; border-bottom: 2px solid #ffd700; padding-bottom: 10px;">Оплата і доставка</h2>
+        <div style="color: #444; font-size: 0.95rem; line-height: 1.6; max-height: 60vh; overflow-y: auto; padding-right: 10px;">
+            <p><b>🚚 Способи доставки:</b><br>Відправка замовлень здійснюється по всій території України службами "Нова Пошта" та "Укрпошта". Термін доставки залежить від обраного оператора.</p>
+            <p><b>💳 Способи оплати:</b><br>1. Повна передоплата на офіційні реквізити (IBAN).<br>2. Післяплата (накладений платіж) можлива за умови внесення мінімального гарантійного платежу у розмірі 150 грн (покриває транспортні витрати у разі відмови).</p>
+            <p><b>⏳ Терміни:</b><br>Більшість виробів виготовляються індивідуально. Термін виготовлення складає від 2 до 5 робочих днів після підтвердження замовлення.</p>
+        </div>
+    </div>
+</div>
+
+<div id="returnModal" class="modal-overlay" style="display: none; z-index: 100000; background: rgba(0,0,0,0.8); align-items: center; justify-content: center;">
+    <div class="modal-content" style="background: #fff; padding: 30px; border-radius: 12px; max-width: 500px; width: 90%; position: relative; text-align: left;">
+        <span onclick="this.parentElement.parentElement.style.display='none'" style="position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #888;">&times;</span>
+        <h2 style="color: #111; margin-top: 0; border-bottom: 2px solid #ffd700; padding-bottom: 10px;">Обмін та повернення</h2>
+        <div style="color: #444; font-size: 0.95rem; line-height: 1.6; max-height: 60vh; overflow-y: auto; padding-right: 10px;">
+            <p>Відповідно до Закону України «Про захист прав споживачів», ви маєте право повернути або обміняти товар належної якості протягом <b>14 днів</b> з моменту отримання.</p>
+            <p><b>Умови повернення:</b><br>- Товар не був у використанні, збережено його товарний вигляд та споживчі властивості.<br>- Наявні всі розрахункові документи.</p>
+            <p style="color: #d32f2f; font-weight: bold;">⚠️ Важливо: Вироби, які були виготовлені за індивідуальним замовленням (нанесення персонального гравіювання, ініціалів, зміна стандартних розмірів), обміну та поверненню НЕ підлягають.</p>
+            <p>Транспортні витрати на повернення товару належної якості оплачує покупець.</p>
+        </div>
+    </div>
+</div>
+
+<div id="offerModal" class="modal-overlay" style="display: none; z-index: 100000; background: rgba(0,0,0,0.8); align-items: center; justify-content: center;">
+    <div class="modal-content" style="background: #fff; padding: 30px; border-radius: 12px; max-width: 500px; width: 90%; position: relative; text-align: left;">
+        <span onclick="this.parentElement.parentElement.style.display='none'" style="position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #888;">&times;</span>
+        <h2 style="color: #111; margin-top: 0; border-bottom: 2px solid #ffd700; padding-bottom: 10px;">Договір публічної оферти</h2>
+        <div style="color: #444; font-size: 0.95rem; line-height: 1.6; max-height: 60vh; overflow-y: auto; padding-right: 10px;">
+            <p>Цей текст є публічною офертою інтернет-магазину LEVKOVO. Здійснюючи замовлення на сайті, Користувач повністю приймає умови цього договору.</p>
+            <p><b>1. Предмет договору:</b> Продавець зобов'язується передати у власність Покупця товар, а Покупець зобов'язується оплатити і прийняти товар.</p>
+            <p><b>2. Характеристики товару:</b> Шкіра — натуральний матеріал. Можливі незначні відхилення у відтінку та фактурі від фотографій на сайті, що не є браком, а підтверджує натуральність походження матеріалу (особливо для шкіри Crazy Horse).</p>
+            <p><b>3. Конфіденційність:</b> Ваші персональні дані (ПІБ, телефон, адреса) використовуються виключно для обробки та доставки замовлення і не передаються третім особам.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openLegalModal(modalId) {
+        document.getElementById(modalId).style.display = 'flex';
+    }
+</script>
+    <script>
+        let allOrders = [];
+        let currentStatus = 'В обробці';
+
+        // ПЕРЕМИКАЧ РОЗДІЛІВ
+        function showSection(name) {
+            if (name === 'settings') {
+                document.getElementById('settings-section').style.display = 'block';
+                document.getElementById('orders-section').style.display = 'none';
+                document.getElementById('btn-settings').style.background = '#8b4513';
+                document.getElementById('btn-orders').style.background = '#555';
+            } else {
+                document.getElementById('settings-section').style.display = 'none';
+                document.getElementById('orders-section').style.display = 'block';
+                document.getElementById('btn-orders').style.background = '#8b4513';
+                document.getElementById('btn-settings').style.background = '#555';
+                loadOrders();
+            }
+        }
+
+        // ЗАВАНТАЖЕННЯ ЗАМОВЛЕНЬ
+        async function loadOrders() {
+            const { data, error } = await supabaseClient
+                .from('orders')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) return console.error(error);
+            allOrders = data;
+            renderOrders();
+        }
+
+        function changeStatusTab(status, el) {
+            currentStatus = status;
+            document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            renderOrders();
+        }
+
+        function renderOrders() {
+            const list = document.getElementById('ordersList');
+            const searchVal = document.getElementById('adminSearch').value.toLowerCase();
+            
+            const filtered = allOrders.filter(o => 
+                o.status === currentStatus && 
+                (o.client_name.toLowerCase().includes(searchVal) || o.phone.includes(searchVal))
+            );
+            
+            list.innerHTML = filtered.length ? '' : `<p style="text-align:center; padding:20px;">Замовлень немає</p>`;
+            
+            filtered.forEach(order => {
+                const card = document.createElement('div');
+                card.className = `order-card ${getStatusClass(order.status)}`;
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div onclick="toggleDetails(${order.id})" style="cursor:pointer">
+                            <strong>${order.client_name}</strong> — ${order.total_price} грн
+                            <div style="font-size:11px; color:gray">${new Date(order.created_at).toLocaleString()}</div>
+                        </div>
+                        <select onchange="updateStatus(${order.id}, this.value)">
+                            <option value="В обробці" ${order.status === 'В обробці' ? 'selected' : ''}>Нове</option>
+                            <option value="Підтверджено" ${order.status === 'Підтверджено' ? 'selected' : ''}>В роботі</option>
+                            <option value="Відправлено" ${order.status === 'Відправлено' ? 'selected' : ''}>Відправлено</option>
+                            <option value="Виконано" ${order.status === 'Виконано' ? 'selected' : ''}>Виконано</option>
+                            <option value="Скасовано" ${order.status === 'Скасовано' ? 'selected' : ''}>Скасовано</option>
+                        </select>
+                    </div>
+                    <div id="details-${order.id}" class="details">
+                        <p>📞 <b>Телефон:</b> ${order.phone}</p>
+                        <p>📍 <b>Адреса:</b> ${order.address}</p>
+                        <p>💬 <b>Коментар:</b> ${order.comment || 'немає'}</p>
+                        <hr>
+                        <b>Товари:</b>
+                        <ul>
+                            ${order.items.map(i => `<li>${i.name || i.type} (${i.color}) x${i.qty} — ${i.price}грн</li>`).join('')}
+                        </ul>
+                        <button class="delete-btn" onclick="deleteOrder(${order.id})">Видалити замовлення</button>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        async function updateStatus(id, newStatus) {
+            const { error } = await supabaseClient
+                .from('orders')
+                .update({ status: newStatus })
+                .eq('id', id);
+
+            if (!error) loadOrders();
+        }
+
+        async function deleteOrder(id) {
+            if(confirm("Видалити замовлення назавжди?")) {
+                const { error } = await supabaseClient.from('orders').delete().eq('id', id);
+                if (!error) loadOrders();
+            }
+        }
+
+        function toggleDetails(id) {
+            const el = document.getElementById(`details-${id}`);
+            el.style.display = el.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function getStatusClass(s) {
+            if (s === 'В обробці') return 'new';
+            if (s === 'Підтверджено') return 'process';
+            if (s === 'Відправлено') return 'shipped';
+            return '';
+        }
+
+        document.getElementById('adminSearch').addEventListener('input', renderOrders);
+
+        // Початкове завантаження
+        loadOrders();
+    </script>
+</body>
+</html>

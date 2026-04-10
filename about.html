@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Про нас | LEVKOVO</title>
+    <link rel="icon" type="image/png" href="favicon.jpg">
+    <link rel="stylesheet" href="css.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --premium-brown: #3d2b1f;
+            --leather-accent: #8b4513;
+            --bg-cream: #f9f7f2;
+        }
+
+        body {
+            background-color: var(--bg-cream);
+            color: var(--premium-brown);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .about-hero {
+            height: 80vh;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://gbcjezzvioayompuqojx.supabase.co/storage/v1/object/public/product-images/color%20crazy%20horze/IMG_5667.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            animation: fadeIn 2s ease;
+        }
+
+        .section {
+            max-width: 900px;
+            margin: 100px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .fade-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s ease;
+        }
+
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .mission-title {
+            font-size: 2rem;
+            color: var(--leather-accent);
+            margin-bottom: 30px;
+        }
+
+        .engraving-box {
+            background: #fff;
+            padding: 40px;
+            border-left: 5px solid var(--leather-accent);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            margin: 50px 0;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        /* Оновлені стилі для посилань соціальних мереж */
+.social-links a {
+    text-decoration: none;
+    color: var(--premium-brown);
+    font-weight: bold;
+    display: inline-block; /* Важливо для роботи анімації стрибка */
+    transition: color 0.3s ease;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    position: relative;
+}
+
+/* Ефект при наведенні */
+.social-links a:hover {
+    color: var(--leather-accent);
+    animation: gentleBounce 0.6s ease; /* Ніжне підстрибування */
+}
+
+/* Сама анімація підстрибування */
+@keyframes gentleBounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    30% {
+        transform: translateY(-5px); /* Висота стрибка */
+    }
+    50% {
+        transform: translateY(-2px);
+    }
+    70% {
+        transform: translateY(-3px);
+    }
+}
+.global-reach-box {
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    padding: 60px 40px;
+    border-radius: 2px;
+    border: 1px solid rgba(139, 69, 19, 0.1);
+    position: relative;
+    margin: 80px 0;
+}
+
+.global-icon {
+    font-size: 2.5rem;
+    filter: sepia(0.5) hue-rotate(-15deg); /* Тон під колір шкіри */
+}
+
+.etsy-badge {
+    margin-top: 40px;
+}
+
+.etsy-link {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--premium-brown);
+    font-weight: bold;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: transform 0.3s ease;
+}
+
+.etsy-link:hover {
+    transform: scale(1.05); /* Легке збільшення при наведенні */
+    animation: gentleBounce 0.6s ease; /* Твоє улюблене підстрибування */
+}
+
+.etsy-link img {
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.etsy-link:hover img {
+    opacity: 1;
+}
+.youtube-showcase-box {
+    background: #fff;
+    padding: 60px 40px;
+    border-radius: 2px;
+    border-bottom: 3px solid #FF0000; /* Тонкий акцент YouTube */
+    margin: 80px 0;
+    transition: box-shadow 0.3s ease;
+}
+
+.youtube-showcase-box:hover {
+    box-shadow: 0 15px 40px rgba(0,0,0,0.03);
+}
+
+.youtube-icon {
+    font-size: 2.5rem;
+}
+
+.youtube-badge {
+    margin-top: 35px;
+}
+
+.youtube-link {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--premium-brown);
+    font-weight: bold;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: transform 0.3s ease;
+}
+
+.youtube-link:hover {
+    transform: scale(1.05);
+    animation: gentleBounce 0.6s ease; /* Твій фірмовий стрибок */
+}
+
+.youtube-link img {
+    filter: grayscale(0.2); /* Трохи приглушуємо яскравість для естетики */
+    transition: filter 0.3s ease;
+}
+
+.youtube-link:hover img {
+    filter: grayscale(0);
+}
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+    <script src="analytics.js"></script>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="nav-logo" onclick="window.location.href='index.html'" style="cursor:pointer;">← LEVKOVO</div>
+</div>
+
+<header class="about-hero">
+    <div class="hero-content">
+        <h1>Майстерня LEVKOVO</h1>
+        <p>Мистецтво, що старіє красиво</p>
+    </div>
+</header>
+<div id="sidebar" class="sidebar">
+    <div style="text-align: right; cursor: pointer; font-size: 1.8rem; padding: 10px 20px; color: #fff;" onclick="toggleSidebar()">✕</div>
+    
+    <h2 style="color: #111; text-align: center; margin-top: 0; margin-bottom: 25px; letter-spacing: 2px;">LEVKOVO</h2>
+    
+   <ul style="padding-bottom: 40px;">
+    <li><a href="index.html">Головна</a></li>
+    
+    <li>
+        <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 12px 0; border-bottom: 1px solid #eee;" onclick="toggleSubmenu()">
+            <strong style="color: #333; font-size: 1.1rem; font-weight: 500;">Товари</strong>
+            <span id="submenu-arrow" style="color: #111; font-size: 1.2rem; transition: transform 0.3s;">▼</span>
+        </div>
+        <ul id="mobile-categories-list" class="submenu-accordion">
+            </ul>
+    </li>
+    
+    <li><a href="#" onclick="openReviewsModal(); toggleSidebar(); return false;" style="color: #b8860b;">Відгуки клієнтів</a></li>
+    
+    <li id="profile-link-li" style="margin-top: 10px; border-top: 2px solid #f5f5f5; padding-top: 10px; padding-bottom: 15px;">
+        <a href="#" onclick="login(); toggleSidebar(); return false;" style="font-weight: bold; color: #111;">Мій Профіль / Реєстрація</a>
+    </li>
+
+    <li style="margin-top: 20px;">
+        <ul style="list-style: none; padding: 0; border-left: 2px solid #eee; padding-left: 15px;">
+            <li><a href="#" onclick="openLegalModal('deliveryModal'); toggleSidebar(); return false;" style="font-size: 0.85rem; color: #999; padding: 5px 0; border: none;">Оплата і доставка</a></li>
+            <li><a href="#" onclick="openLegalModal('returnModal'); toggleSidebar(); return false;" style="font-size: 0.85rem; color: #999; padding: 5px 0; border: none;">Обмін та повернення</a></li>
+            <li><a href="#" onclick="openLegalModal('offerModal'); toggleSidebar(); return false;" style="font-size: 0.85rem; color: #999; padding: 5px 0; border: none;">Публічна оферта</a></li>
+        </ul>
+    </li>
+
+    <li style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px;">
+         <a href="about.html" style="display: block; font-size: 0.95rem; color: #666; font-weight: 500; border: none; transition: 0.2s;">
+            <h3> Про нас</h3>
+        </a>
+        <a href="#" onclick="openContacts(); toggleSidebar(); return false;" style="display: block; font-size: 1.3rem; font-weight: 800; color: #111; padding-bottom: 5px; border: none; transition: 0.2s;">
+            📞 Контакти
+        </a>
+       
+    </li>
+</ul> 
+</div>
+
+<section class="section fade-up">
+    <h2 class="mission-title">Наша Місія</h2>
+    <p style="font-size: 1.2rem;">Ми створюємо не просто аксесуари, а речі, які служитимуть вам десятиліттями. Наші вироби з Crazy Horse красиво старіють, набуваючи унікальної патини з кожним роком.</p>
+</section>
+
+<section class="section fade-up">
+    <h2 class="mission-title">Команда та Цінності</h2>
+    <p>За кожним швом стоїть команда досвідчених майстрів. Для нас важливо, щоб кожен товар виглядав ідеально та індивідуально. Ми поважаємо натуральність: кожна шкіра має свої особливості та свій неповторний візерунок.</p>
+</section>
+
+<section class="section fade-up">
+    <div class="engraving-box">
+        <h3>Ваша історія на шкірі</h3>
+        <p>Ми виконуємо професійне гравіювання будь-якої складності: від важливих слів до ваших улюблених фото, картинок чи малюнків. Зробіть свій виріб по-справжньому особистим.</p>
+    </div>
+</section>
+<section class="section fade-up">
+    <div class="global-reach-box">
+        <div class="global-icon">🌍</div>
+        <h2 class="mission-title" style="margin-top: 10px;">Українське ремесло, визнане світом</h2>
+        <p>Ми пишаємося тим, що вироби levkovo подорожують з Вінниці у найвіддаленіші куточки планети. Кожен аксесуар — це частинка української душі та майстерності, яка тепер доступна по всьому світу через нашу платформу на Etsy.</p>
+        
+        <div class="etsy-badge">
+            <a href="https://www.etsy.com/shop/levkovo" target="_blank" class="etsy-link">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Etsy_logo.svg" alt="Etsy Logo" style="height: 40px; margin-bottom: 10px;">
+                <span>Відвідати наш магазин</span>
+            </a>
+        </div>
+    </div>
+</section>
+<section class="section fade-up">
+    <div class="youtube-showcase-box">
+        <div class="youtube-icon">🎬</div>
+        <h2 class="mission-title" style="margin-top: 10px;">За лаштунками майстерні</h2>
+        <p>Ми не просто шиємо — ми створюємо контент, який надихає. На нашому YouTube-каналі ми показуємо кожен етап народження виробів: від першого дотику ножа до фінального стібка. Дивіться наживо, як створюється якість, що служитиме вам десятиліттями.</p>
+        
+        <div class="youtube-badge">
+            <a href="https://youtube.com/@levkovoleather" target="_blank" class="youtube-link">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg" alt="YouTube Logo" style="height: 35px; margin-bottom: 10px;">
+                <span>Підписатися на канал</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="section fade-up">
+    <h2 class="mission-title">Слідкуйте за процесом</h2>
+    <div class="social-links">
+        <a href="https://www.instagram.com/levkovo__manufacture/" target="_blank">Instagram</a>
+        <a href="https://www.tiktok.com/@levkovohandmade" target="_blank">TikTok</a>
+        <a href="https://youtube.com/@levkovoleather" target="_blank">YouTube</a>
+        <a href="https://www.etsy.com/shop/levkovo" target="_blank">Etsy</a>
+    </div>
+</section>
+
+<script>
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    });
+
+    document.querySelectorAll('.fade-up').forEach((el) => observer.observe(el));
+</script>
+<footer style="background: #111; color: #ccc; padding: 50px 20px 20px; margin-top: 60px; font-family: 'Segoe UI', sans-serif; border-top: 3px solid #ffd700;">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px; justify-content: space-between;">
+        
+        <div style="flex: 1; min-width: 250px;">
+            <h3 style="color: #ffd700; margin-top: 0; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase;">LEVKOVO</h3>
+            <p style="font-size: 0.95rem; line-height: 1.6; color: #aaa;">Майстерня шкіряних виробів ручної роботи. Створюємо речі, які живуть довше, ніж швидкоплинні тренди. Тільки натуральна шкіра, тільки ручний шов.</p>
+        </div>
+
+        <div style="flex: 1; min-width: 200px;">
+            <h4 style="color: #fff; margin-top: 0; font-size: 1.1rem;">Клієнтам</h4>
+            <ul style="list-style: none; padding: 0; line-height: 2; font-size: 0.95rem;">
+                <li><a href="#" onclick="openLegalModal('deliveryModal'); return false;" style="color: #ccc; text-decoration: none; transition: 0.2s;">📦 Оплата і доставка</a></li>
+                <li><a href="#" onclick="openLegalModal('returnModal'); return false;" style="color: #ccc; text-decoration: none; transition: 0.2s;">🔄 Обмін та повернення</a></li>
+                <li><a href="#" onclick="openLegalModal('offerModal'); return false;" style="color: #ccc; text-decoration: none; transition: 0.2s;">📄 Публічна оферта</a></li>
+            </ul>
+        </div>
+
+        <div style="flex: 1; min-width: 200px;">
+            <h4 style="color: #fff; margin-top: 0; font-size: 1.1rem;">Контакти</h4>
+            <p style="font-size: 0.95rem; margin: 8px 0;">📞 <a href="tel:+380689721598" style="color: #ffd700; text-decoration: none; font-weight: bold;">+38 (068) 972-15-98</a></p>
+            <div style="display: flex; gap: 15px; margin: 15px 0;">
+                <a href="https://t.me/levkovo_support" target="_blank" style="color: #ccc; text-decoration: none; font-size: 0.9rem; border: 1px solid #444; padding: 5px 10px; border-radius: 5px;">Telegram</a>
+                <a href="https://connect.viber.com/business/c740c454-18c9-11f1-866a-ceca6eb5e534" target="_blank" style="color: #ccc; text-decoration: none; font-size: 0.9rem; border: 1px solid #444; padding: 5px 10px; border-radius: 5px;">Viber</a>
+                 </div>
+            <p style="font-size: 0.9rem; margin: 5px 0; color: #888;">📍 Україна, м. Вінниця</p>
+            <p style="font-size: 0.9rem; margin: 5px 0; color: #888;">⏰ Пн-Пт: 9:00 - 23:00</p>
+             <div style="display: flex; gap: 15px; margin: 15px 0;">
+               <a href="https://www.instagram.com/levkovo__manufacture/" target="_blank" style="color: #ccc; text-decoration: none; font-size: 0.9rem; border: 1px solid #444; padding: 5px 10px; border-radius: 5px;">Instagram</a>
+                 <a href="https://www.youtube.com/@Levkovoleather" target="_blank" style="color: #ccc; text-decoration: none; font-size: 0.9rem; border: 1px solid #444; padding: 5px 10px; border-radius: 5px;">YouTube</a>
+                 <a href="https://www.etsy.com/shop/levkovo" target="_blank" style="color: #ccc; text-decoration: none; font-size: 0.9rem; border: 1px solid #444; padding: 5px 10px; border-radius: 5px;">Etsy</a>
+            </div>
+        </div>
+    </div>
+    <div style="text-align: center; border-top: 1px solid #333; margin-top: 40px; padding-top: 20px; font-size: 0.85rem; color: #666;">
+        &copy; 2026 LEVKOVO. Всі права захищено. Копіювання матеріалів заборонено.
+    </div>
+</footer>
+
+<div id="deliveryModal" class="modal-overlay" style="display: none; z-index: 100000; background: rgba(0,0,0,0.8); align-items: center; justify-content: center;">
+    <div class="modal-content" style="background: #fff; padding: 30px; border-radius: 12px; max-width: 500px; width: 90%; position: relative; text-align: left;">
+        <span onclick="this.parentElement.parentElement.style.display='none'" style="position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #888;">&times;</span>
+        <h2 style="color: #111; margin-top: 0; border-bottom: 2px solid #ffd700; padding-bottom: 10px;">Оплата і доставка</h2>
+        <div style="color: #444; font-size: 0.95rem; line-height: 1.6; max-height: 60vh; overflow-y: auto; padding-right: 10px;">
+            <p><b>🚚 Способи доставки:</b><br>Відправка замовлень здійснюється по всій території України службами "Нова Пошта" та "Укрпошта". Термін доставки залежить від обраного оператора.</p>
+            <p><b>💳 Способи оплати:</b><br>1. Повна передоплата на офіційні реквізити (IBAN).<br>2. Післяплата (накладений платіж) можлива за умови внесення мінімального гарантійного платежу у розмірі 150 грн (покриває транспортні витрати у разі відмови).</p>
+            <p><b>⏳ Терміни:</b><br>Більшість виробів виготовляються індивідуально. Термін виготовлення складає від 2 до 5 робочих днів після підтвердження замовлення.</p>
+        </div>
+    </div>
+</div>
+
+<div id="returnModal" class="modal-overlay" style="display: none; z-index: 100000; background: rgba(0,0,0,0.8); align-items: center; justify-content: center;">
+    <div class="modal-content" style="background: #fff; padding: 30px; border-radius: 12px; max-width: 500px; width: 90%; position: relative; text-align: left;">
+        <span onclick="this.parentElement.parentElement.style.display='none'" style="position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #888;">&times;</span>
+        <h2 style="color: #111; margin-top: 0; border-bottom: 2px solid #ffd700; padding-bottom: 10px;">Обмін та повернення</h2>
+        <div style="color: #444; font-size: 0.95rem; line-height: 1.6; max-height: 60vh; overflow-y: auto; padding-right: 10px;">
+            <p>Відповідно до Закону України «Про захист прав споживачів», ви маєте право повернути або обміняти товар належної якості протягом <b>14 днів</b> з моменту отримання.</p>
+            <p><b>Умови повернення:</b><br>- Товар не був у використанні, збережено його товарний вигляд та споживчі властивості.<br>- Наявні всі розрахункові документи.</p>
+            <p style="color: #d32f2f; font-weight: bold;">⚠️ Важливо: Вироби, які були виготовлені за індивідуальним замовленням (нанесення персонального гравіювання, ініціалів, зміна стандартних розмірів), обміну та поверненню НЕ підлягають.</p>
+            <p>Транспортні витрати на повернення товару належної якості оплачує покупець.</p>
+        </div>
+    </div>
+</div>
+
+<div id="offerModal" class="modal-overlay" style="display: none; z-index: 100000; background: rgba(0,0,0,0.8); align-items: center; justify-content: center;">
+    <div class="modal-content" style="background: #fff; padding: 30px; border-radius: 12px; max-width: 500px; width: 90%; position: relative; text-align: left;">
+        <span onclick="this.parentElement.parentElement.style.display='none'" style="position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #888;">&times;</span>
+        <h2 style="color: #111; margin-top: 0; border-bottom: 2px solid #ffd700; padding-bottom: 10px;">Договір публічної оферти</h2>
+        <div style="color: #444; font-size: 0.95rem; line-height: 1.6; max-height: 60vh; overflow-y: auto; padding-right: 10px;">
+            <p>Цей текст є публічною офертою інтернет-магазину LEVKOVO. Здійснюючи замовлення на сайті, Користувач повністю приймає умови цього договору.</p>
+            <p><b>1. Предмет договору:</b> Продавець зобов'язується передати у власність Покупця товар, а Покупець зобов'язується оплатити і прийняти товар.</p>
+            <p><b>2. Характеристики товару:</b> Шкіра — натуральний матеріал. Можливі незначні відхилення у відтінку та фактурі від фотографій на сайті, що не є браком, а підтверджує натуральність походження матеріалу (особливо для шкіри Crazy Horse).</p>
+            <p><b>3. Конфіденційність:</b> Ваші персональні дані (ПІБ, телефон, адреса) використовуються виключно для обробки та доставки замовлення і не передаються третім особам.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openLegalModal(modalId) {
+        document.getElementById(modalId).style.display = 'flex';
+    }
+</script>
+</body>
+</html>
