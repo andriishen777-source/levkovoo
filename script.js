@@ -548,17 +548,30 @@ async function initSingleProductPage() {
         if (error) throw error;
         const features = prod.features || {};
 
-        titleEl.innerText = prod.title;
+    titleEl.innerText = prod.title;
+        
+        // --- ВЖИВЛЕННЯ КОРОТКОГО ОПИСУ ПІД ЦІНУ ---
+        const shortDescElement = document.getElementById('prod-short-desc');
+        if (shortDescElement) {
+            shortDescElement.innerText = prod.description || "";
+        }
+        // -----------------------------------------
+
         document.getElementById('prod-desc').innerText = features.detailedDescription ? features.detailedDescription : prod.description;
         document.getElementById('prod-price').innerText = `${prod.price} грн`;
         document.getElementById('prod-img').src = prod.main_image;
 
-        const thumbnailsContainer = document.getElementById('prod-thumbnails');
+       const thumbnailsContainer = document.getElementById('prod-thumbnails');
         if (thumbnailsContainer) {
             if (features.gallery && features.gallery.length > 0) {
                 const allImages = [prod.main_image, ...features.gallery];
-                thumbnailsContainer.innerHTML = allImages.map(imgUrl => `<img src="${imgUrl}" onclick="document.getElementById('prod-img').src='${imgUrl}'" style="min-width: 60px; width: 60px; height: 60px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 1px solid #ccc;" onmouseover="this.style.border='2px solid #8b4513'" onmouseout="this.style.border='1px solid #ccc'">`).join('');
-            } else { thumbnailsContainer.innerHTML = ''; }
+                
+                // СКОПІЮЙ ЦЕЙ РЯДОК ДУЖЕ ОБЕРЕЖНО, ТУТ ВАЖЛИВІ ЗВОРОТНІ АПОСТРОФИ ( ` )
+                thumbnailsContainer.innerHTML = allImages.map(imgUrl => `<img src="${imgUrl}" onclick="document.getElementById('prod-img').src='${imgUrl}'" style="flex-shrink: 0; width: 65px; height: 65px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 1px solid #e0e0e0; transition: 0.2s;" onmouseover="this.style.borderColor='#8b4513'; this.style.transform='scale(1.05)';" onmouseout="this.style.borderColor='#e0e0e0'; this.style.transform='scale(1)';">`).join('');
+                
+            } else { 
+                thumbnailsContainer.innerHTML = ''; 
+            }
         }
 
         if (features.colors && features.colors.length > 0) {
